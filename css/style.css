@@ -1,0 +1,655 @@
+/* Общие стили */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #000218;
+    color: #ffffff;
+}
+
+main {
+    flex: 1;
+    /* Основное содержимое занимает всё доступное пространство */
+}
+
+/* Стили для header */
+header {
+    position: relative;
+    background-color: #000218;
+    padding: 10px 20px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Логотип */
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 50px;
+    /* Высота логотипа */
+}
+
+/* Основной контейнер для правой части заголовка */
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+/* Стили для номера телефона */
+.header-phone {
+    color: #00FF7F;
+    /* Цвет текста */
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+/* Стили для навигационного меню */
+.header-menu {
+    display: flex;
+}
+
+.header-menu ul {
+    list-style-type: none;
+    /* Убираем маркеры списка */
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.header-menu ul li {
+    margin-right: 10px;
+    /* Отступ между пунктами меню */
+}
+
+.header-menu ul li a {
+    text-decoration: none;
+    color: #00FF7F;
+    /* Цвет текста ссылок */
+    position: relative;
+    padding: 8px;
+    /* Вертикальное выравнивание текста */
+}
+
+/* Полоска при наведении на ссылки меню */
+.header-menu ul li a:hover::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    /* Высота полоски под ссылкой */
+    background-color: #00FF7F;
+    /* Цвет полоски */
+}
+
+/* Зеленая полоска по всему header */
+.header-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    /* Высота полоски */
+    background-color: #00FF7F;
+    /* Зеленый цвет полоски */
+}
+
+/* Стили для иконки магазина и её модального окна */
+.header-market {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #00FF7F;
+    /* Цвет текста */
+}
+
+.cart-icon {
+    transition: transform 0.3s ease, fill 0.3s ease;
+    margin-right: 5px;
+    /* Отступ между иконкой и текстом */
+}
+
+.header-market:hover .cart-icon {
+    transform: scale(1.2);
+    /* Увеличение иконки при наведении */
+}
+
+.modal {
+    display: none;
+    /* Скрыть модальное окно по умолчанию */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+    /* Полупрозрачный черный фон */
+}
+
+/* Стили для модального окна */
+.modal-content {
+    background-color: #000218;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #00FF7F;
+    width: 80%;
+    max-width: 500px;
+    color: #00FF7F;
+}
+
+.service-info {
+    border: 2px solid #00FF7F;
+    /* Граница прямоугольника */
+    padding: 15px;
+    margin-top: 20px;
+    color: #00FF7F;
+    /* Цвет текста внутри прямоугольника */
+}
+
+#cartItems {
+    margin-top: 20px;
+}
+
+#totalPrice {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.delete-button {
+    background-color: #00FF7F;
+    border: none;
+    color: #000218;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+
+.delete-button:hover {
+    background-color: #000218;
+    /* Изменение фона при наведении */
+    color: #00FF7F;
+    /* Изменение цвета текста при наведении */
+    border: 1px solid #00FF7F;
+}
+
+.close {
+    color: #00FF7F;
+    /* Цвет кнопки закрытия */
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: red;
+    /* Цвет кнопки закрытия при наведении и фокусе */
+    text-decoration: none;
+    cursor: pointer;
+    /* Указатель курсора при наведении */
+}
+
+/* Бургер-меню */
+.burger-menu {
+    display: none;
+    /* Скрыть бургер-меню по умолчанию */
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.burger-menu span {
+    width: 25px;
+    height: 3px;
+    background-color: #00FF7F;
+    margin: 4px 0;
+}
+
+/* Анимация бургер-меню в крестик */
+.burger-menu.open span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.burger-menu.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.burger-menu.open span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+.close-menu {
+    display: none;
+    /* Скрыт по умолчанию */
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 30px;
+    color: #00FF7F;
+    cursor: pointer;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .burger-menu {
+        display: flex;
+        /* Показать бургер-меню на мобильных устройствах */
+    }
+
+    .header-menu {
+        display: none;
+        /* Скрыть горизонтальное меню по умолчанию */
+        position: fixed;
+        top: 0;
+        left: -100%; /* Начальная позиция за пределами экрана */
+        right: 0;
+        bottom: 0;
+        background-color: #000218;
+        flex-direction: column;
+        align-items: center;
+        z-index: 1000;
+        padding-top: 50px;
+        transition: left 0.5s ease; /* Плавный переход для появления меню */
+    }
+
+    .header-menu.open {
+        display: flex;
+        left: 0; /* Меню появляется с левой стороны */
+    }
+
+    .close-menu {
+        display: block;
+        /* Показать крестик на мобильных устройствах */
+    }
+
+    .header-menu ul {
+        flex-direction: column;
+        /* Вертикальное расположение */
+        width: 100%;
+        text-align: center;
+        /* Центрирование текста */
+        border-top: 2px solid #00FF7F;
+        /* Верхняя граница */
+    }
+
+    .header-menu ul li {
+        width: 100%;
+        border-bottom: 2px solid #00FF7F;
+        /* Разделительные линии между пунктами меню */
+    }
+
+    .header-menu ul li a {
+        display: block;
+        /* Блочный элемент для полной ширины кликабельности */
+        padding: 20px 0;
+        /* Отступы для кликабельности */
+        font-size: 24px;
+        /* Увеличенный размер шрифта для удобства */
+        color: #00FF7F;
+        /* Цвет текста */
+        transition: background-color 0.3s ease, color 0.3s ease;
+        /* Плавный переход для эффекта наведения */
+    }
+
+    .header-menu ul li a:hover {
+        background-color: #00FF7F;
+        /* Фон меняется при наведении */
+        color: #000218;
+        /* Цвет текста меняется при наведении */
+    }
+}
+
+
+
+/* Стили для footer */
+footer {
+    position: relative;
+    background-color: #000218;
+    color: #00FF7F;
+    padding: 10px 20px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Зеленая полоска по всему footer */
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    /* Высота полоски */
+    background-color: #00FF7F;
+    /* Зеленый цвет полоски */
+}
+
+
+
+
+/* Страница index.html */
+/* Заголовок */
+.main-heading {
+    text-align: center;
+    color: #00FF7F;
+    font-size: 30px;
+    margin-top: 20px;
+    margin-bottom: 300px;
+}
+
+/* Вывод побуквенной строки */
+#quote-container {
+    text-align: center;
+    color: #00FF7F;
+    font-size: 24px;
+
+}
+
+/* Страница about.html */
+/* Оформление текста обо мне */
+.about-me {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - footer-height);
+    /* Высота секции минус высота футера */
+    color: #00FF7F;
+    /* Цвет текста #00FF7F */
+    text-align: center;
+}
+
+.about-me h1 {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    /* Отступ снизу для заголовка */
+}
+
+/* Галерея работ */
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+.image-container {
+    border: 2px solid #00FF7F;
+    /* Граница с цветом #00FF7F */
+    border-radius: 15px;
+    /* Округленные углы */
+    background-color: #000218;
+    /* Фон прямоугольника */
+    padding: 10px;
+    /* Отступы внутри прямоугольника */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    text-align: center;
+    /* Центрирование текста под изображением */
+}
+
+.image-container img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    /* Округленные углы изображения */
+}
+
+.image-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 255, 127, 0.5);
+}
+
+.image-caption {
+    color: #00FF7F;
+    /* Цвет текста подписи */
+    margin-top: 10px;
+    /* Отступ сверху для подписи */
+}
+
+.footer-content {
+    text-align: center;
+    padding: 20px;
+}
+
+
+
+
+
+/* Страница contacts.html */
+/* Стили для формы */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.page-wrapper {
+    font-family: 'Arial', sans-serif;
+    background-color: #000218;
+    /* Фон страницы */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 75vh;
+}
+
+.form-container {
+    background-color: #000218; /* Цвет формы */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    border: 2px solid #00FF7F; /* Обводка формы */
+}
+
+form h2 {
+    margin-bottom: 20px;
+    color: #00FF7F;
+    /* Цвет заголовка */
+    text-align: center;
+    /* Центрирование заголовка */
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #00FF7F;
+    /* Цвет текста меток */
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid #00FF7F;
+    /* Обводка полей ввода */
+    background-color: #000218;
+    /* Цвет фона полей ввода */
+    color: #00FF7F;
+    /* Цвет текста внутри полей ввода */
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #FF8800;
+    /* Цвет фокуса полей ввода */
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #000218;
+    /* Цвет кнопки */
+    color: #00FF7F;
+    /* Цвет текста кнопки */
+    border: 2px solid #00FF7F;
+    /* Обводка кнопки */
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #01466e;
+    /* Более темный оттенок для эффекта наведения */
+}
+
+
+/* Страница price.html */
+/* Стили для таблицы */
+.styled-table {
+    margin: 25px auto;
+    width: auto;
+    border-collapse: collapse;
+    font-size: 18px;
+    text-align: center;
+    background-color: #000218;
+    color: #ffffff;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+    border: 2px solid #00FF7F;
+    /* Цвет окантовки и разделения */
+}
+
+.styled-table tbody td:hover {
+    background-color: #1a1a2e;
+    /* Цвет фона ячейки при наведении */
+}
+
+.service-row td {
+    background-color: #000218; /* Устанавливаем фон для строки с услугами */
+    color: #ffffff; /* Устанавливаем цвет текста для строки с услугами */
+}
+
+.order-button {
+    padding: 5px 10px;
+    background-color: #00FF7F;
+    color: #000000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.order-button:hover {
+    background-color: #007f67;
+}
+
+.center {
+    margin-top: 20px;
+    text-align: center;
+    /* Центрирование текста */
+}
+
+/* Стили для счетчика */
+
+.countdown-container {
+    background-color: #000218;
+    border: 2px solid #00FF7F;
+    border-radius: 20px;
+    padding: 30px 50px;
+    text-align: center;
+    max-width: 600px;
+    margin: 20px auto;
+    /* Центрирование по горизонтали */
+}
+
+
+.promotion-box {
+    background-color: #000218;
+    /* Цвет фона */
+    border: 2px solid #00FF7F;
+    /* Цвет границы */
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    /* Отступ снизу */
+}
+
+.promotion-text {
+    font-size: 1.5em;
+    color: #00FF7F;
+    /* Цвет текста */
+}
+
+.time-box {
+    display: inline-block;
+    margin: 10px;
+    padding: 20px;
+    border: 2px solid #00FF7F;
+    border-radius: 15px;
+    background-color: #000218;
+}
+
+.time-box span {
+    display: block;
+    font-size: 2.5em;
+    color: #ffb411;
+}
+
+.time-label {
+    font-size: 1em;
+    color: #ffffff;
+}
+
+/* Кнопка для получения скидки  */
+.discount-button {
+    border: 2px solid #00FF7F;
+    background-color: #000218;
+    color: #00FF7F;
+    max-width: 600px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.discount-button:hover {
+    background-color: #00FF7F;
+    color: #000218;
+}
+
+.discount-button-container {
+    text-align: center;/* Центрирование кнопки по горизонтали */
+    margin-top: 20px; /* Отступ сверху для расстояния от счетчика */
+}

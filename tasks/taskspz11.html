@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Угадай число</title>
+  <link rel="icon" href="../svg/atom.png" type="image/png">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #000218;
+      font-family: "Arial", sans-serif;
+    }
+
+    #game-container {
+      background-color: #000218;
+      /* Фон контейнера */
+      padding: 30px;
+      border-radius: 15px;
+      border: 2px solid #00ff7f;
+      /* Зеленая граница */
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      font-size: 2.5em;
+      color: #00ff7f;
+      /* Зеленый цвет текста */
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 255, 127, 0.2);
+    }
+
+    p {
+      font-size: 1.1em;
+      color: #00ff7f;
+      /* Зеленый цвет текста */
+      margin-bottom: 15px;
+    }
+
+    #buttons {
+      margin-top: 20px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 12px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 25px;
+      border: 2px solid #00ff7f;
+      /* Зеленая граница */
+      background-color: #000218;
+      /* Фон кнопки совпадает с фоном контейнера */
+      color: #00ff7f;
+      /* Зеленый текст */
+      transition: background-color 0.3s, transform 0.3s, color 0.3s;
+    }
+
+    button:hover {
+      background-color: #00ff7f;
+      /* Зеленый фон при наведении */
+      color: #000218;
+      /* Темно-синий текст при наведении */
+      transform: scale(1.05);
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    /* Стили кнопки "Назад" */
+    .back-button {
+      position: fixed;
+      /* Фиксированное положение */
+      top: 20px;
+      /* Отступ сверху */
+      right: 20px;
+      /* Отступ справа */
+      background-color: #00ff7f;
+      /* Основной зеленый цвет */
+      color: #000;
+      /* Цвет текста кнопки */
+      border: none;
+      width: 50px;
+      /* Ширина кнопки */
+      height: 40px;
+      /* Высота кнопки (такая же, как у "Условия задачи") */
+      display: flex;
+      /* Flexbox для выравнивания содержимого */
+      justify-content: center;
+      /* Центрирование содержимого по горизонтали */
+      align-items: center;
+      /* Центрирование содержимого по вертикали */
+      font-size: 24px;
+      /* Размер значка (стрелки) */
+      cursor: pointer;
+      /* Указатель при наведении */
+      box-shadow: 0 4px 10px rgba(0, 255, 127, 0.5);
+      /* Тень для кнопки */
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    /* Эффект при наведении */
+    .back-button:hover {
+      background-color: #008f5a;
+      /* Более темный зеленый цвет при наведении */
+      transform: scale(1.1);
+      /* Увеличение кнопки */
+    }
+
+    /* Эффект при нажатии */
+    .back-button:active {
+      transform: scale(0.9);
+      /* Уменьшение кнопки при нажатии */
+    }
+
+    /* Стили кнопки "Условия задачи" */
+    .task-button {
+      position: fixed;
+      /* Фиксированное положение */
+      top: 20px;
+      /* Отступ сверху */
+      left: 20px;
+      /* Отступ слева */
+      background-color: #00ff7f;
+      /* Зеленый цвет кнопки */
+      color: #000218;
+      /* Темно-синий текст кнопки */
+      border: none;
+      padding: 10px 20px;
+      /* Внутренние отступы кнопки */
+      border-radius: 10px;
+      /* Скругление углов кнопки */
+      font-weight: bold;
+      /* Жирный текст */
+      font-size: 16px;
+      cursor: pointer;
+      /* Указатель при наведении */
+      box-shadow: 0 4px 10px rgba(0, 255, 127, 0.5);
+      /* Тень для кнопки */
+    }
+
+    .task-button:hover {
+      background-color: #32cd32;
+      /* Ярко-зеленый при наведении */
+    }
+
+    /* Стили модального окна */
+    .modal {
+      display: none;
+      /* Скрываем окно по умолчанию */
+      position: fixed;
+      /* Фиксированное положение окна */
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 2, 24, 0.9);
+      /* Полупрозрачный темно-синий фон */
+      z-index: 1000;
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #000218;
+      color: #00ff7f;
+      padding: 30px;
+      border-radius: 15px;
+      width: calc(100% - 40px);
+      max-width: 500px;
+      box-shadow: 0px 10px 20px rgba(0, 255, 127, 0.5);
+    }
+
+    .modal-content h2 {
+      font-size: 24px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .modal-content p {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .modal-content ul {
+      margin-top: 10px;
+    }
+
+    .modal-content ul li {
+      margin-bottom: 10px;
+    }
+
+    /* Стили кнопки закрытия */
+    .close-button {
+      background-color: #00ff7f;
+      color: #000218;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .close-button:hover {
+      background-color: #32cd32;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Кнопка "Условия задачи" -->
+  <button class="task-button" onclick="openModal()">Условия задачи</button>
+
+  <!-- Модальное окно -->
+  <div class="modal" id="taskModal">
+    <div class="modal-content">
+      <h2>Условия задачи</h2>
+      <ul>
+        <li>Напишите мини-игру "Угадай число".</li>
+        <li>У игрока есть <strong>5 попыток</strong>, чтобы угадать случайное число, сгенерированное программой.</li>
+        <li>После каждой попытки:
+          <ul>
+            <li>Если число угадано правильно, выведите сообщение через <code>alert</code>: <strong>"Да"</strong>.</li>
+            <li>Если число неверное, выведите сообщение через <code>alert</code>: <strong>"Нет"</strong>.</li>
+          </ul>
+        </li>
+        <li>Если игрок не угадал число за 5 попыток:
+          <ul>
+            <li>Выведите сообщение о том, что попытки закончились.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <button class="close-button" onclick="closeModal()">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Кнопка "Назад" -->
+  <button class="back-button" onclick="goBack()">←</button>
+
+  <div id="game-container">
+    <h1>Угадай число</h1>
+    <p>Загадано число от 1 до 10</p>
+    <p>У вас есть 5 попыток, чтобы угадать</p>
+
+    <div id="buttons">
+      <button onclick="guessNumber(1)">1</button>
+      <button onclick="guessNumber(2)">2</button>
+      <button onclick="guessNumber(3)">3</button>
+      <button onclick="guessNumber(4)">4</button>
+      <button onclick="guessNumber(5)">5</button>
+      <button onclick="guessNumber(6)">6</button>
+      <button onclick="guessNumber(7)">7</button>
+      <button onclick="guessNumber(8)">8</button>
+      <button onclick="guessNumber(9)">9</button>
+      <button onclick="guessNumber(10)">10</button>
+    </div>
+
+    <p id="message"></p>
+  </div>
+
+  <script>
+    let randomNumber; // Переменная для хранения случайного загаданного числа
+    let attempts; // Переменная для хранения оставшихся попыток
+    let gameNumber = 0; // Переменная для отслеживания номера игры
+
+    // Функция для открытия модального окна
+    function openModal() {
+      document.getElementById("taskModal").style.display = "block";
+    }
+
+    // Функция для закрытия модального окна
+    function closeModal() {
+      document.getElementById("taskModal").style.display = "none";
+    }
+
+    // Функция для перехода на страницу about.html
+    function goBack() {
+      window.location.href = "../about.html";
+    }
+
+    // Функция для начала новой игры
+    function startNewGame(isFirstLoad) {
+      // Генерируем случайное число от 1 до 10
+      randomNumber = Math.floor(Math.random() * 10) + 1;
+
+      // Увеличиваем номер игры
+      gameNumber++;
+
+      // Логируем загаданное число в консоль (для отладки)
+      console.log(
+        "Игра №" + gameNumber + ": Загаданное число - " + randomNumber
+      );
+
+      // Устанавливаем количество попыток на 5
+      attempts = 5;
+
+      // Если это не первый запуск страницы, выводим сообщение о начале новой игры
+      if (!isFirstLoad) {
+        alert("Игра началась заново. Угадайте число!");
+      }
+    }
+
+    // Функция для обработки попытки угадать число
+    function guessNumber(userGuess) {
+      // Проверяем, угадал ли пользователь число
+      if (userGuess === randomNumber) {
+        // Если угадал, поздравляем и начинаем новую игру
+        if (confirm("Поздравляем! Вы угадали число! Игра начнется заново.")) {
+          startNewGame(false);
+        }
+      } else {
+        // Если не угадал, уменьшаем количество попыток
+        attempts--;
+
+        // Если остались попытки, выводим сообщение о количестве оставшихся попыток
+        if (attempts > 0) {
+          alert("Неправильно. Осталось попыток: " + attempts);
+        } else {
+          // Если попытки закончились, сообщаем об этом и начинаем новую игру
+          if (
+            confirm("Вы проиграли. Загаданное число было: " + randomNumber)
+          ) {
+            startNewGame(false);
+          }
+        }
+      }
+    }
+
+    // Запускаем новую игру при загрузке страницы
+    startNewGame(true);
+  </script>
+</body>
+
+</html>

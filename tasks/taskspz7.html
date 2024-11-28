@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кнопка Like</title>
+  <link rel="icon" href="../svg/atom.png" type="image/png">
+  <style>
+    /* Общие стили для страницы */
+    body {
+      background-color: #000218;
+      color: #00ff7f;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    /* Центрирование лайка */
+    .like-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      /* Высота контейнера на весь экран */
+    }
+
+    /* Стили кнопки лайка */
+    #likeButton {
+      background-color: #00ff7f;
+      color: #000218;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #likeButton:hover {
+      background-color: #32cd32;
+    }
+
+    /* Стили кнопки "Назад" */
+    .back-button {
+      position: fixed;
+      /* Фиксированное положение */
+      top: 20px;
+      /* Отступ сверху */
+      right: 20px;
+      /* Отступ справа */
+      background-color: #00ff7f;
+      /* Основной зеленый цвет */
+      color: #000;
+      /* Цвет текста кнопки */
+      border: none;
+      width: 50px;
+      /* Ширина кнопки */
+      height: 40px;
+      /* Высота кнопки (такая же, как у "Условия задачи") */
+      display: flex;
+      /* Flexbox для выравнивания содержимого */
+      justify-content: center;
+      /* Центрирование содержимого по горизонтали */
+      align-items: center;
+      /* Центрирование содержимого по вертикали */
+      font-size: 24px;
+      /* Размер значка (стрелки) */
+      cursor: pointer;
+      /* Указатель при наведении */
+      box-shadow: 0 4px 10px rgba(0, 255, 127, 0.5);
+      /* Тень для кнопки */
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    /* Эффект при наведении */
+    .back-button:hover {
+      background-color: #008f5a;
+      /* Более темный зеленый цвет при наведении */
+      transform: scale(1.1);
+      /* Увеличение кнопки */
+    }
+
+    /* Эффект при нажатии */
+    .back-button:active {
+      transform: scale(0.9);
+      /* Уменьшение кнопки при нажатии */
+    }
+
+    /* Стили кнопки "Условия задачи" */
+    .task-button {
+      position: fixed;
+      /* Фиксированное положение */
+      top: 20px;
+      left: 20px;
+      background-color: #00ff7f;
+      color: #000218;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 255, 127, 0.5);
+      /* Тень для кнопки */
+    }
+
+    .task-button:hover {
+      background-color: #32cd32;
+      /* Ярко-зеленый при наведении */
+    }
+
+    /* Стили модального окна */
+    .modal {
+      display: none;
+      /* Скрываем окно по умолчанию */
+      position: fixed;
+      /* Фиксированное положение окна */
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 2, 24, 0.9);
+      /* Полупрозрачный темно-синий фон */
+      z-index: 1000;
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #000218;
+      color: #00ff7f;
+      padding: 30px;
+      border-radius: 15px;
+      width: calc(100% - 40px);
+      max-width: 500px;
+      box-shadow: 0px 10px 20px rgba(0, 255, 127, 0.5);
+    }
+
+    .modal-content h2 {
+      font-size: 24px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .modal-content p {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .modal-content ul {
+      margin-top: 10px;
+    }
+
+    .modal-content ul li {
+      margin-bottom: 10px;
+    }
+
+    /* Стили кнопки закрытия */
+    .close-button {
+      background-color: #00ff7f;
+      color: #000218;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .close-button:hover {
+      background-color: #32cd32;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Контейнер для центрирования кнопки лайка -->
+  <div class="like-container">
+    <button id="likeButton"><span>🖤 Like</span> <span id="likeCount">0</span></button>
+  </div>
+
+  <!-- Кнопка "Условия задачи" -->
+  <button class="task-button" onclick="openModal()">Условия задачи</button>
+
+  <!-- Модальное окно -->
+  <div class="modal" id="taskModal">
+    <div class="modal-content">
+      <h2>Условия задачи</h2>
+      <p>
+        Необходимо создать HTML-страницу с кнопкой "Like", при нажатии на которую увеличивается счётчик лайков.
+      </p>
+
+      <button class="close-button" onclick="closeModal()">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Кнопка "Назад" -->
+  <button class="back-button" onclick="goBack()">←</button>
+
+  <script>
+    let likeCount = 0; // Переменная для хранения количества лайков
+
+    // Добавление функции события click к кнопке
+    document.getElementById("likeButton").onclick = function () {
+      likeCount++; // Увеличение значения переменной likeCount на 1 при каждом клике
+      // Обновление текста внутри элемента
+      document.getElementById("likeCount").textContent = likeCount;
+    }
+    
+    // Функция для открытия модального окна
+    function openModal() {
+      document.getElementById("taskModal").style.display = "flex";
+    }
+
+    // Функция для закрытия модального окна
+    function closeModal() {
+      document.getElementById("taskModal").style.display = "none";
+    }
+
+    // Функция для перехода на страницу about.html
+    function goBack() {
+      window.location.href = "../about.html";
+    }
+  </script>
+
+</body>
+
+</html>

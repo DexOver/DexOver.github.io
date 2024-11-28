@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Wars</title>
+    <link rel="icon" href="../svg/atom.png" type="image/png">
+    <style>
+        /* Основные стили */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000218;
+            /* Темно-синий фон */
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .logo {
+            display: block;
+            margin: 20px auto;
+            width: 200px;
+        }
+
+        .films-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        /* Стили карточек фильмов */
+        .film-card {
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            width: 320px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            /* Центрирование текста */
+        }
+
+        .film-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 15px rgba(255, 255, 255, 0.4);
+        }
+
+        .film-card h2 {
+            font-size: 1.8rem;
+            color: #00FF7F;
+            /* Ярко-зеленый цвет */
+            margin-bottom: 10px;
+        }
+
+        .film-card p {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .quote {
+            font-style: italic;
+            color: #aaa;
+        }
+
+        /* Стили кнопок */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            /* Кнопки друг под другом */
+            align-items: center;
+            /* Центрирование кнопок по горизонтали */
+            gap: 10px;
+            /* Расстояние между кнопками */
+            margin-top: 15px;
+            /* Отступ сверху */
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #00FF7F;
+            /* Основной зеленый цвет */
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            /* Кнопка занимает всю ширину родителя */
+            max-width: 200px;
+            /* Ограничение максимальной ширины кнопки */
+        }
+
+        .btn:hover {
+            background-color: #32CD32;
+            /* Темно-зеленый при наведении */
+            transform: scale(1.05);
+        }
+
+        /* Контейнер для дополнительной информации */
+        .info-container {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #333;
+            border-radius: 5px;
+        }
+
+        .item {
+            padding: 5px 0;
+            border-bottom: 1px solid #555;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        /* Стили кнопки "Назад" */
+        .back-button {
+            position: fixed;
+            /* Фиксированное положение */
+            top: 20px;
+            /* Отступ сверху */
+            right: 20px;
+            /* Отступ справа */
+            background-color: #00FF7F;
+            /* Основной зеленый цвет */
+            color: #000;
+            /* Цвет текста кнопки */
+            border: none;
+            /* Убираем границу */
+            width: 50px;
+            /* Ширина кнопки */
+            height: 50px;
+            /* Высота кнопки (равна ширине для квадратной формы) */
+            display: flex;
+            /* Flexbox для выравнивания содержимого */
+            justify-content: center;
+            /* Центрирование содержимого по горизонтали */
+            align-items: center;
+            /* Центрирование содержимого по вертикали */
+            font-size: 24px;
+            /* Размер значка (стрелки) */
+            cursor: pointer;
+            /* Указатель при наведении */
+            box-shadow: 0 4px 10px rgba(0, 255, 127, 0.5);
+            /* Тень для кнопки */
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #32CD32;
+            /* Темно-зеленый при наведении */
+            transform: scale(1.1);
+            /* Увеличение при наведении */
+        }
+
+        /* Стили кнопки "Условия задачи" */
+        .task-button {
+            position: fixed;
+            /* Фиксированное положение */
+            top: 20px;
+            /* Отступ сверху */
+            left: 20px;
+            /* Отступ слева */
+            background-color: #00FF7F;
+            /* Зеленый цвет кнопки */
+            color: #000218;
+            /* Темно-синий текст кнопки */
+            border: none;
+            /* Убираем границу */
+            padding: 10px 20px;
+            /* Внутренние отступы кнопки */
+            border-radius: 10px;
+            /* Скругление углов кнопки */
+            font-weight: bold;
+            /* Жирный текст */
+            font-size: 16px;
+            cursor: pointer;
+            /* Указатель при наведении */
+            box-shadow: 0 4px 10px rgba(0, 255, 127, 0.5);
+            /* Тень для кнопки */
+        }
+
+        .task-button:hover {
+            background-color: #32CD32;
+            /* Ярко-зеленый при наведении */
+        }
+
+        /* Стили модального окна */
+        .modal {
+            display: none;
+            /* Скрываем окно по умолчанию */
+            position: fixed;
+            /* Фиксированное положение окна */
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 2, 24, 0.9);
+            /* Полупрозрачный темно-синий фон */
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #000218;
+            color: #00FF7F;
+            padding: 30px;
+            border-radius: 15px;
+            width: calc(100% - 40px);
+            max-width: 500px;
+            box-shadow: 0px 10px 20px rgba(0, 255, 127, 0.5);
+        }
+
+        .modal-content h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .modal-content p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .modal-content ul {
+            margin-top: 10px;
+        }
+
+        .modal-content ul li {
+            margin-bottom: 10px;
+        }
+
+        /* Стили кнопки закрытия */
+        .close-button {
+            background-color: #00FF7F;
+            color: #000218;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+            background-color: #32CD32;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Кнопка "Условия задачи" -->
+    <button class="task-button" onclick="openModal()">Условия задачи</button>
+
+    <!-- Модальное окно -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <h2>Условия задачи</h2>
+            <p>Необходимо создать HTML-страницу Star Wars, в ней при помощи API вывести:</p>
+            <ul>
+                <li>Названия фильмов</li>
+                <li>Режиссеров</li>
+                <li>Даты выхода</li>
+                <li>Цитаты</li>
+                <li>Персонажей, планеты и корабли для каждого фильма</li>
+            </ul>
+            <p>Также применить стилизацию ко всем элементам страницы.</p>
+            <button class="close-button" onclick="closeModal()">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Кнопка "Назад" -->
+    <button class="back-button" onclick="goBack()">←</button>
+
+    <!-- Логотип -->
+    <img class="logo" src="../logo/logo2.jpg" alt="Star Wars Logo">
+
+    <!-- Контейнер для фильмов -->
+    <div class="films-container" id="films-container"></div>
+
+    <script>
+        const filmsContainer = document.getElementById('films-container');
+        // Функция для открытия модального окна
+        function openModal() {
+            document.getElementById('taskModal').style.display = 'block';
+        }
+
+        // Функция для закрытия модального окна
+        function closeModal() {
+            document.getElementById('taskModal').style.display = 'none';
+        }
+
+        // Функция для перехода на страницу about.html
+        function goBack() {
+            window.location.href = '../about.html';
+        }
+
+        // Функция для получения списка фильмов
+        async function fetchFilms() {
+            const response = await fetch('https://swapi.dev/api/films/');
+            const data = await response.json();
+            return data.results.sort((a, b) => a.episode_id - b.episode_id); // Сортировка по номеру эпизода
+        }
+
+        // Функция для загрузки данных из нескольких URL
+        async function fetchMultipleData(urls) {
+            const requests = urls.map(url => fetch(url).then(response => response.json()));
+            return Promise.all(requests);
+        }
+
+        // Функция для отображения фильмов
+        function printFilms(films) {
+            films.forEach(film => {
+                const filmCard = document.createElement('div');
+                filmCard.classList.add('film-card');
+
+                // Заголовок фильма
+                const title = document.createElement('h2');
+                title.textContent = `Эпизод ${film.episode_id}: ${film.title}`;
+
+                // Режиссер
+                const director = document.createElement('p');
+                director.textContent = `Режиссер: ${film.director}`;
+
+                // Дата выхода (форматирование)
+                const releaseDate = document.createElement('p');
+                releaseDate.textContent = `Дата выхода: ${formatDate(film.release_date)}`;
+
+                // Цитата (вступление)
+                const openingCrawl = document.createElement('p');
+                openingCrawl.classList.add('quote');
+                openingCrawl.textContent = `Цитата: ${film.opening_crawl}`;
+
+                // Группа кнопок
+                const btnGroup = document.createElement('div');
+                btnGroup.classList.add('btn-group');
+
+                // Кнопки для персонажей, кораблей и планет
+                const charactersButton = createToggleButton(
+                    'Персонажи',
+                    'Скрыть',
+                    () => handleCharacters(film.characters, filmCard)
+                );
+                const starshipsButton = createToggleButton(
+                    'Корабли',
+                    'Скрыть',
+                    () => handleStarships(film.starships, filmCard)
+                );
+                const planetsButton = createToggleButton(
+                    'Планеты',
+                    'Скрыть',
+                    () => handlePlanets(film.planets, filmCard)
+                );
+
+                // Добавляем кнопки в группу кнопок
+                btnGroup.append(charactersButton, starshipsButton, planetsButton);
+
+                // Добавляем элементы на карточку фильма
+                filmCard.append(title, director, releaseDate, openingCrawl, btnGroup);
+                filmsContainer.append(filmCard);
+            });
+        }
+
+        // Функция для создания кнопок с переключением
+        function createToggleButton(showText, hideText, onClick) {
+            const button = document.createElement('button');
+            button.classList.add('btn');
+            button.textContent = showText;
+
+            let isShowing = false;
+
+            button.addEventListener('click', () => {
+                isShowing = !isShowing;
+                button.textContent = isShowing ? hideText : showText;
+                onClick(isShowing);
+            });
+
+            return button;
+        }
+
+        // Функция для отображения элементов (персонажи, корабли или планеты)
+        function printItems(items, container) {
+            let infoContainer = container.querySelector('.info-container');
+
+            if (infoContainer) {
+                infoContainer.remove();
+                return; // Удаляем контейнер при повторном клике
+            }
+
+            infoContainer = document.createElement('div');
+            infoContainer.classList.add('info-container');
+
+            items.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('item');
+                itemDiv.textContent = item.name || item.title; // Отображаем имя или название
+
+                infoContainer.append(itemDiv);
+            });
+
+            container.append(infoContainer);
+        }
+
+        // Обработчики для персонажей, кораблей и планет
+        async function handleCharacters(charactersUrls, container) {
+            const characters = await fetchMultipleData(charactersUrls);
+            printItems(characters, container);
+        }
+
+        async function handleStarships(starshipsUrls, container) {
+            const starships = await fetchMultipleData(starshipsUrls);
+            printItems(starships, container);
+        }
+
+        async function handlePlanets(planetsUrls, container) {
+            const planets = await fetchMultipleData(planetsUrls);
+            printItems(planets, container);
+        }
+
+        // Функция для форматирования даты в формате DD.MM.YYYY
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Месяцы начинаются с 0
+            const year = date.getFullYear();
+
+            return `${day}.${month}.${year}`;
+        }
+
+        // Инициализация
+        async function init() {
+            const films = await fetchFilms();
+            printFilms(films);
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

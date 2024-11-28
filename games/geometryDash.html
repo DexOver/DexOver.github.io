@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Dash на Canvas</title>
+    <link rel="icon" href="../svg/atom.png" type="image/png">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #gameCanvas {
+            display: block;
+            background-color: #87ceeb;
+            /* Небесно-голубой фон */
+        }
+
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background-color: rgba(255, 255, 255, 0);
+            /* Полностью прозрачный фон */
+        }
+
+        #info span {
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            /* Чтобы текст выравнивался ровно друг под другом */
+        }
+
+        /* Стили для модального окна */
+        #modal {
+            display: none;
+            /* Скрыто по умолчанию */
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        #modal-content {
+            background-color: #fefefe;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        #modal-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #ok-button {
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        #ok-button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="info">
+        <span id="time">Время: 0с</span>
+        <span id="progress">Прогресс: 0%</span>
+        <span id="attempts">Попытки: 0</span>
+    </div>
+
+    <!-- Модальное окно -->
+    <div id="modal">
+        <div id="modal-content">
+            <p id="modal-text"></p>
+            <button id="ok-button">OK</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let player;
+        let obstacles = [];
+        let particles = [];
+        let gameSpeed = 3;
+        let timeElapsed = 0;
+        let distanceCovered = 0;
+        const levelLength = 5000; // Длина уровня в пикселях
+        let gameWon = false;
+        let attempts = 0;
+
+        const backgroundLayers = [
+            { image: new Image(), speedModifier: 0.2 },
+            { image: new Image(), speedModifier: 0.4 },
+            { image: new Image(), speedModifier: 0.6 }
+        ];
+
+        // backgroundLayers[0].image.src = 'https://i.imgur.com/3L3yRr7.png'; // Дальний фон
+        // backgroundLayers[1].image.src = 'https://i.imgur.com/3L3yRr7.png'; // Средний фон
+        // backgroundLayers[2].image.src = 'https://i.imgur.com/3L3yRr7.png'; // Ближний фон
+
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 255);
+            const g = Math.floor(Math.random() * 255);
+            const b = Math.floor(Math.random() * 255);
+            return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+        }
+        function initializeGame() {
+            player = {
+                x: 50,
+                y: canvas.height - 100,
+                size: 30,
+                color: getRandomColor(),
+                dy: 0,
+                gravity: 0.5,
+                jumpPower: -10,
+                isJumping: false,
+                jumpCount: 0,
+                maxJumps: 2,
+                rotation: 0
+            };
+            obstacles = [];
+            particles = [];
+            gameSpeed = 3;
+            timeElapsed = 0;
+            distanceCovered = 0;
+
+            if (attempts >= 20) {
+                showGameOver();
+                return; // Останавливаем инициализацию игры после проигрыша
+            }
+
+            attempts++;
+        }
+
+        function showGameOver() {
+            document.getElementById('modal-text').textContent = 'Ты проиграл!';
+            document.getElementById('modal-text').style.color = 'red';
+            document.getElementById('modal').style.display = 'flex';
+
+            document.getElementById('ok-button').onclick = function () {
+                window.location.href = 'price.html';
+            };
+        }
+
+        function createObstacle() {
+            const type = Math.random() > 0.5 ? 'triangle' : 'rectangle';
+            const size = Math.random() * 30 + 20;
+
+            const lastObstacle = obstacles[obstacles.length - 1];
+            const minDistance = size + 100;// Минимальное расстояние между препятствиями
+
+            if (!lastObstacle || (lastObstacle.x + lastObstacle.size + minDistance < canvas.width)) {
+                const obstacle = {
+                    x: canvas.width,
+                    y: canvas.height - size - 50,
+                    size: size,
+                    type: type,
+                    color: getRandomColor()
+                };
+
+                obstacles.push(obstacle);
+            }
+        }
+
+        function updateObstacles() {
+            if (Math.random() < 0.01) {
+                createObstacle();
+            }
+
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obstacle = obstacles[i];
+                obstacle.x -= gameSpeed;
+
+                if (obstacle.x + obstacle.size < 0) {
+                    obstacles.splice(i, 1);
+                }
+
+                if (player.x < obstacle.x + obstacle.size && player.x + player.size > obstacle.x && player.y < obstacle.y + obstacle.size && player.y + player.size > obstacle.y) {
+                    initializeGame();// Сброс состояния игры при поражении
+                    break;
+                }
+            }
+        }
+
+        function updatePlayer() {
+            player.y += player.dy;
+
+            if (player.y + player.size < canvas.height - 50) {
+                player.dy += player.gravity;
+            } else {
+                player.y = canvas.height - player.size - 50;
+                player.dy = 0;
+                player.isJumping = false;
+                player.jumpCount = 0;// Сброс счетчика прыжков при касании земли
+            }
+
+            if (player.isJumping) {
+                createParticles(player.x + player.size / 2, player.y + player.size);
+                player.rotation += Math.PI / 180 * gameSpeed * 5;// Вращение игрока при прыжке
+                player.color = getRandomColor();// Изменение цвета при прыжке
+            } else {
+                player.rotation *= 0.9;// Плавное замедление вращения после прыжка
+            }
+        }
+
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+
+            ctx.save();
+            ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
+            ctx.rotate(player.rotation);
+
+            // Градиент для игрока
+            const gradient = ctx.createLinearGradient(-player.size / 2, -player.size / 2, player.size / 2, player.size / 2);
+            gradient.addColorStop(0, '#ff7f50');// Светлый цвет
+            gradient.addColorStop(1, '#ff4500');// Темный цвет
+            ctx.fillStyle = gradient;
+
+            ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
+
+            ctx.restore();
+        }
+
+        function drawObstacles() {
+            for (const obstacle of obstacles) {
+                ctx.fillStyle = obstacle.color;
+
+                if (obstacle.type === 'triangle') {
+                    ctx.beginPath();
+                    ctx.moveTo(obstacle.x, obstacle.y + obstacle.size);
+                    ctx.lineTo(obstacle.x + obstacle.size / 2, obstacle.y);
+                    ctx.lineTo(obstacle.x + obstacle.size, obstacle.y + obstacle.size);
+                    ctx.closePath();
+                    ctx.fill();
+                } else if (obstacle.type === 'rectangle') {
+                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.size, obstacle.size / 2);
+                }
+
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        function drawBackground() {
+            for (const layer of backgroundLayers) {
+                const width = layer.image.width;
+                const height = layer.image.height;
+
+                let xPos = -(timeElapsed * gameSpeed * layer.speedModifier) % width;
+
+                while (xPos < canvas.width) {
+                    ctx.drawImage(layer.image, xPos, canvas.height - height);
+                    xPos += width;
+                }
+            }
+
+
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            for (let i = 0; i < 10; i++) {// Увеличено количество облаков до 10
+                const cloudX = (i * 200 - (timeElapsed * gameSpeed * 0.1)) % canvas.width;// Уменьшено расстояние между облаками
+                const cloudY = Math.sin(i + timeElapsed * 0.1) * 20 + 50;
+                ctx.beginPath();
+                ctx.arc(cloudX, cloudY, 20, 0, Math.PI * 2);
+                ctx.arc(cloudX + 30, cloudY + 10, 25, 0, Math.PI * 2);
+                ctx.arc(cloudX + 60, cloudY, 20, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Линия земли
+            ctx.strokeStyle = '#654321';// Коричневая линия
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - 50);
+            ctx.lineTo(canvas.width, canvas.height - 50);
+            ctx.stroke();
+
+            // Закрашивание области ниже линии земли
+            ctx.fillStyle = '#8B4513';// Цвет земли
+            ctx.fillRect(0, canvas.height - 50, canvas.width, canvas.height);
+        }
+
+        function createParticles(x, y) {
+            for (let i = 0; i < 5; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    dx: (Math.random() - 0.5) * 2,
+                    dy: Math.random() * -2,
+                    size: Math.random() * 5 + 2,
+                    life: Math.random() * 30 + 20
+                });
+            }
+        }
+
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                particle.x += particle.dx;
+                particle.y += particle.dy;
+                particle.dy += player.gravity * 0.1;
+                particle.life--;
+
+                if (particle.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        function drawParticles() {
+            for (const particle of particles) {
+                var redComponent = Math.floor(particle.life * 255 / 50);
+                var alphaComponent = particle.life / 50;
+
+                ctx.fillStyle = 'rgba(255,' + redComponent + ',' + redComponent + ',' + alphaComponent + ')';
+
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function updateGame() {
+            if (gameWon) return;// Останавливаем обновление игры после победы
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBackground();
+
+            updatePlayer();
+            updateObstacles();
+            updateParticles();
+
+            drawPlayer();
+            drawObstacles();
+            drawParticles();
+
+            timeElapsed += 1 / 60;
+
+            distanceCovered += gameSpeed;
+
+            let progressPercentage = Math.min((distanceCovered / levelLength) * 100, 100).toFixed(1);
+
+            document.getElementById('time').textContent = 'Время: ' + Math.floor(timeElapsed) + 'с';
+            document.getElementById('progress').textContent = 'Прогресс: ' + progressPercentage + '%';
+            document.getElementById('attempts').textContent = 'Попытки: ' + attempts;
+
+            if (progressPercentage >= 100 && !gameWon) {
+                gameWon = true;
+
+                setTimeout(function () {// Задержка перед показом сообщения
+                    let discount = Math.floor(Math.random() * (60 - 1 + 1)) + 1;// Случайная скидка от 1 до 60%
+
+                    document.getElementById('modal-text').textContent = 'Вы победили! Ваша скидка составляет ' + discount + '%!';
+                    document.getElementById('modal').style.display = 'flex';
+
+                    document.getElementById('ok-button').onclick = function () {
+                        window.location.href = '../price.html';// Перенаправление на страницу price.html
+                    };
+
+                    return; // Завершаем выполнение функции после победы
+
+                }, 100);// Задержка в миллисекундах
+
+            } else if (attempts >= 20 && !gameWon) {
+                showGameOver(); // Показываем окно проигрыша после достижения лимита попыток
+                return; // Останавливаем обновление игры после проигрыша
+            } else {
+                requestAnimationFrame(updateGame);
+            }
+        }
+
+        window.addEventListener('keydown', function (e) {
+            if (e.code === 'Space' && !gameWon) {
+                if (!player.isJumping || player.jumpCount < player.maxJumps) {
+                    player.dy = player.jumpPower;
+                    player.isJumping = true;
+                    player.jumpCount++;
+
+                    const jumpSound = new Audio('https://www.soundjay.com/button/sounds/button-16.mp3');
+                    jumpSound.play();
+                }
+            }
+        });
+
+        initializeGame(); // Инициализация состояния игры при загрузке
+        updateGame();
+    </script>
+</body>
+
+</html>
